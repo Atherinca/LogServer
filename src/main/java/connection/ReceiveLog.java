@@ -1,16 +1,24 @@
 package connection;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.google.gson.Gson;
 
@@ -20,9 +28,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
-
 import ch.qos.logback.core.util.StatusPrinter;
-
 
 /**
  * Servlet implementation class ReiceiveLog
@@ -30,7 +36,7 @@ import ch.qos.logback.core.util.StatusPrinter;
 @WebServlet("/receivelog")
 public class ReceiveLog extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+	static final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 	/**
 	 * Default constructor. 
 	 */
@@ -41,18 +47,33 @@ public class ReceiveLog extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
-		doPost(request, response);
+		response.sendError(405);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String clientOrigin = request.getHeader("origin");
-		response.setHeader("Access-Control-Allow-Origin", clientOrigin);
+
+		try {
+			String path= new File("").getAbsolutePath();
+			File fXmlFile = new File(path + "/src/test/resources/property.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+
+			doc.getDocumentElement().normalize();
+			if (doc.getDocumentElement().getNodeName() == "configuration"){
+				NodeList originList = doc.getElementsByTagName("origin");
+				NodeList ageList = doc.getElementsByTagName("max-age");
+				String origin = originList.item(0).getTextContent();
+				String maxAge = ageList.item(0).getTextContent();
+				response.setHeader("Access-Control-Allow-Origin", origin);
+				response.setHeader("Access-Control-Max-Age", maxAge);
+			}
+		} catch (Exception e) {}		
 		response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-		response.setHeader("Access-Control-Max-Age", "86400");
 
 		String line = null;
 		StringBuffer jsonString = new StringBuffer();
@@ -64,36 +85,9 @@ public class ReceiveLog extends HttpServlet {
 				jsonString.append(line);
 			}
 			Log log = gson.fromJson(jsonString.toString(), Log.class);
-
-			Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME); 
-			LoggerContext logContext = logger.getLoggerContext(); 
-			logContext.reset(); 
-
-			PatternLayoutEncoder encoder1 = new PatternLayoutEncoder(); 
-			encoder1.setPattern("%date %level [%thread] [%file:%line] %msg%n"); 
-			encoder1.setContext(logContext); 
-			encoder1.start(); 
-
-			PatternLayoutEncoder encoder2 = new PatternLayoutEncoder(); 
-			encoder2.setPattern("%date %level [%thread] [%file:%line] %msg%n"); 
-			encoder2.setContext(logContext); 
-			encoder2.start();
-
-
-			ConsoleAppender<ILoggingEvent> consoleOut = new ConsoleAppender<ILoggingEvent>(); 
-			consoleOut.setEncoder(encoder2); 
-
-			FileAppender<ILoggingEvent> logfileOut = new FileAppender<ILoggingEvent>();  
-			logfileOut.setAppend(true); 
-			logfileOut.setFile("/home/alexandre/Travail/LogServer/error.log"); 
-			logfileOut.setContext(logContext); 
-			logfileOut.setEncoder(encoder1); 
-			logfileOut.start(); 
-
-			Logger logback = logContext.getLogger("ReceiveLog");
-			logback.addAppender(logfileOut);
-			logback.addAppender(consoleOut);
-			logback.debug(log.getErrorMessage());
+			logger.debug("Incoming message from js client line[{}], message [{}]", log.getLine(), log.getErrMessage());
 		} catch (Exception e) {}
 	}
 }
+
+
