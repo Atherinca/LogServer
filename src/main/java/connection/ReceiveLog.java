@@ -2,9 +2,8 @@ package connection;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Properties;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,19 +15,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.google.gson.Gson;
 
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.FileAppender;
-import ch.qos.logback.core.util.StatusPrinter;
+
 
 /**
  * Servlet implementation class ReiceiveLog
