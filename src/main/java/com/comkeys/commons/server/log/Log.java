@@ -1,4 +1,4 @@
-package connection;
+package com.comkeys.commons.server.log;
 
 public class Log {
 	private String errMessage;
