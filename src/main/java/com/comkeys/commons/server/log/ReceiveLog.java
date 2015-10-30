@@ -20,16 +20,25 @@ import com.google.gson.Gson;
 
 /**
  * Servlet implementation class ReiceiveLog
+ * Recoit une requete de type POST contenant la trace d'une erreur sous forme de JSONString
+ * <br/>genere un fichier de log
  */
 @WebServlet("/receivelog")
 public class ReceiveLog extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	static final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+	
+	/**
+	 * Header Origin
+	 */
 	static String origin;
+	/**
+	 * Duree du preflight
+	 */
 	static String maxAge;
 	
 	/**
-	 * static block. 
+	 * Lire le fichier de properties 
 	 */
 	static {
 		try {
@@ -43,6 +52,7 @@ public class ReceiveLog extends HttpServlet {
 	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * erreur retournee en cas de GET
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
 		response.sendError(405);
@@ -53,30 +63,36 @@ public class ReceiveLog extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		/**
-		 * Init Origin and Max-age
+		 * Initiliser le header avec max-age et origin 
 		 */
 		response.setHeader("Access-Control-Allow-Origin", origin);
 		response.setHeader("Acces-Control-Max-Age", maxAge);
 		
 		/**
-		 * Create a Buffer 
+		 * créer un buffer de lecture
 		 */
 		String line = null;
 		StringBuffer jsonString = new StringBuffer();
 		Gson gson = new Gson();
 
 		try {
-
-			BufferedReader reader = request.getReader(); // request for the request data
+			/**
+			 * Recuperer la data de la request 
+			 */
+			BufferedReader reader = request.getReader(); 
 
 			while ((line = reader.readLine()) != null){
 				jsonString.append(line);
 			}
 			
 			/**
-			 * Use of Gson library to build an Object from JSONstring
+			 * grace à la librairie Gson creer un Objet Java à partir d'une JSONString
 			 */
 			Log log = gson.fromJson(jsonString.toString(), Log.class); 
+			
+			/**
+			 * Log le message final (rf src/main/resources/logback.xml)
+			 */
 			logger.debug("Incoming message from js client line[{}], message [{}]", log.getLine(), log.getErrMessage());
 		} catch (Exception e) {}
 	}
