@@ -3,8 +3,10 @@ package com.comkeys.commons.server.log;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,7 +25,7 @@ import com.google.gson.Gson;
  * Recoit une requete de type POST contenant la trace d'une erreur sous forme de JSONString
  * <br/>genere un fichier de log
  */
-@WebServlet("/receivelog")
+
 public class ReceiveLog extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	static final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -31,23 +33,27 @@ public class ReceiveLog extends HttpServlet {
 	/**
 	 * Header Origin
 	 */
-	static String origin;
+	private  String origin;
 	/**
 	 * Duree du preflight
 	 */
-	static String maxAge;
+	private String maxAge;
 	
 	/**
 	 * Lire le fichier de properties 
 	 */
-	static {
+	
+	public void init() throws ServletException{
 		try {
+			String propFile = getInitParameter("propfile");
+			InputStream input = ReceiveLog.class.getResourceAsStream("/" + propFile);
 			Properties properties = new Properties();
-			InputStream input = ReceiveLog.class.getResourceAsStream("/log-server.properties");
 			properties.load(input);			
 			origin = properties.getProperty("origin");
 			maxAge = properties.getProperty("max-age");
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -94,6 +100,8 @@ public class ReceiveLog extends HttpServlet {
 			 * Log le message final (rf src/main/resources/logback.xml)
 			 */
 			logger.debug("Incoming message from js client line[{}], message [{}]", log.getLine(), log.getErrMessage());
-		} catch (Exception e) {}
+		} catch (IOException e) {
+			logger.error("error : ", e);
+		}
 	}
 }
