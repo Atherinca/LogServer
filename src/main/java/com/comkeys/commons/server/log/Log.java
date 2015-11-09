@@ -1,8 +1,5 @@
 package com.comkeys.commons.server.log;
 
-/**
- * TODO add javadoc to Class (english please)
- */
 public class Log {
 
     private String errMessage;
@@ -11,28 +8,28 @@ public class Log {
     private int col;
 
     /**
-     * @return message d'erreur
+     * @return Error Message
      */
     public String getErrMessage() {
         return errMessage;
     }
 
     /**
-     * @return URL de la page occurante
+     * @return Error's URL
      */
     public String getErrURL() {
         return errURL;
     }
 
     /**
-     * @return ligne provoquant l'erreur
+     * @return Error's line
      */
     public int getLine() {
         return line;
     }
 
     /**
-     * @return colonne provoquant l'erreur
+     * @return Error's row
      */
     public int getCol() {
         return col;
