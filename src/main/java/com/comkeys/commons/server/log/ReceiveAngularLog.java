@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +24,7 @@ import com.google.gson.Gson;
  * <br/>genere un fichier de log
  */
 
-public class ReceiveLog extends HttpServlet {
+public class ReceiveAngularLog extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	static final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 	
@@ -48,7 +49,8 @@ public class ReceiveLog extends HttpServlet {
 			properties.load(input);			
 			origin = properties.getProperty("origin");
 			maxAge = properties.getProperty("max-age");
-		} catch (IOException e) {
+            System.out.println("Call of init");
+        } catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -61,22 +63,24 @@ public class ReceiveLog extends HttpServlet {
 		response.sendError(405);
 	}
 
-	/**
+    /**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		/**
 		 * Initiliser le header avec max-age et origin 
 		 */
+        System.out.println("Call of doPost");
 		response.setHeader("Access-Control-Allow-Origin", origin);
 		response.setHeader("Access-Control-Max-Age", maxAge);
 		
 		/**
 		 * créer un buffer de lecture
 		 */
-		String line = null;
+		String line;
 		StringBuffer jsonString = new StringBuffer();
 		Gson gson = new Gson();
+
 		try {
 			/**
 			 * Recuperer la data de la request 
@@ -90,12 +94,16 @@ public class ReceiveLog extends HttpServlet {
 			/**
 			 * grace à la librairie Gson creer un Objet Java à partir d'une JSONString
 			 */
-			Log log = gson.fromJson(jsonString.toString(), Log.class); 
+			LogAngular log = gson.fromJson(jsonString.toString(), LogAngular.class); 
 			
 			/**
 			 * Log le message final (rf src/main/resources/logback.xml)
 			 */
-			logger.debug("Incoming message from js client line[{}], message [{}]", log.getLine(), log.getErrMessage());
+			String [] stacktrace = log.getStackTrace();
+			logger.debug("Incoming message from {}", log.getErrUrl());
+			for (int i = 0; i < stacktrace.length; i++){
+				logger.debug(stacktrace[i]);
+			}
 		} catch (IOException e) {
 			logger.error("error : ", e);
 		}
