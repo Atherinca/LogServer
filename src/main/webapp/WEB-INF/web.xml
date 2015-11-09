@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
   <display-name>logserver</display-name>
+
   <filter>
     <filter-name>CorsFilter</filter-name>
     <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
@@ -10,13 +12,14 @@
     </init-param>
     <init-param>
       <param-name>cors.allowed.headers</param-name>
-      <param-value>Content-Type</param-value>
+      <param-value>Accept,Content-Type</param-value>
     </init-param>
   </filter>
   <filter-mapping>
     <filter-name>CorsFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
   <servlet>
     <servlet-name>ReceiveLog</servlet-name>
     <servlet-class>com.comkeys.commons.server.log.ReceiveLog</servlet-class>
@@ -29,7 +32,8 @@
     <servlet-name>ReceiveLog</servlet-name>
     <url-pattern>/receivelog</url-pattern>
   </servlet-mapping>
-   <servlet>
+
+  <servlet>
     <servlet-name>ReceiveAngularLog</servlet-name>
     <servlet-class>com.comkeys.commons.server.log.ReceiveAngularLog</servlet-class>
     <init-param>

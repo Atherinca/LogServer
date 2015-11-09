@@ -1,6 +1,7 @@
-/target/
-.classpath
-.settings/
-.project
-.conf
-.idea
+### Java
+target
+
+### Intellij
+**.iml
+.*
+!.gitignore
