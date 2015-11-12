@@ -1,11 +1,15 @@
 package com.comkeys.commons.server.log;
 
 public class Log {
-
     private String errMessage;
     private String errURL;
-    private int line;
-    private int col;
+
+    /**
+     * @return Error's URL
+     */
+    public String getErrUrl() {
+        return errURL;
+    }
 
     /**
      * @return Error Message
@@ -14,12 +18,8 @@ public class Log {
         return errMessage;
     }
 
-    /**
-     * @return Error's URL
-     */
-    public String getErrURL() {
-        return errURL;
-    }
+    private int line;
+    private int col;
 
     /**
      * @return Error's line
@@ -33,5 +33,14 @@ public class Log {
      */
     public int getCol() {
         return col;
+    }
+
+    private String[] stackTrace;
+
+    /**
+     * @return StackTrace provided by Angular
+     */
+    public String[] getStackTrace() {
+        return stackTrace;
     }
 }

@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ReceiveAngularLog extends AbstractServlet {
-    private LogAngular log;
 
     @Override
     public void init() throws ServletException {
@@ -28,20 +27,21 @@ public class ReceiveAngularLog extends AbstractServlet {
     }
 
     @Override
-    protected void setLogType(Gson gson, StringBuffer jsonString) {
+    protected Log convertToLogType(Gson gson, StringBuffer jsonString) {
         /**
          * With the GSON library create a Java Object
          */
-        log = gson.fromJson(jsonString.toString(), LogAngular.class);
+        return gson.fromJson(jsonString.toString(), Log.class);
     }
 
     @Override
-    protected void logMessage(Logger logger) {
+    protected void logMessage(Logger logger, Object log) {
         /**
          * Log the message (rf logback.xml)
          */
-        String[] stacktrace = log.getStackTrace();
-        logger.debug("Incoming message from {}", log.getErrUrl());
+        Log logObject = (Log)log;
+        String[] stacktrace = logObject.getStackTrace();
+        logger.debug("Incoming message from {}", logObject.getErrUrl());
         for (int i = 0; i < stacktrace.length; i++) {
             logger.debug(stacktrace[i]);
         }

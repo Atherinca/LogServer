@@ -48,8 +48,8 @@ abstract public class AbstractServlet extends HttpServlet {
         }
     }
 
-    protected abstract void setLogType(Gson gson, StringBuffer jsonString);
-    protected abstract void logMessage(Logger logger);
+    protected abstract Object convertToLogType(Gson gson, StringBuffer jsonString);
+    protected abstract void logMessage(Logger logger, Object log);
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -84,8 +84,8 @@ abstract public class AbstractServlet extends HttpServlet {
             while ((line = reader.readLine()) != null) {
                 jsonString.append(line);
             }
-            setLogType(gson, jsonString);
-            logMessage(logger);
+            Object log = convertToLogType(gson, jsonString);
+            logMessage(logger, log);
         }catch (IOException e) {
             logger.error("error : ", e);
         }

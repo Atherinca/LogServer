@@ -11,7 +11,7 @@ import java.io.File;
 
 import static org.junit.Assert.assertTrue;
 
-public class ReceiveLogTest extends Mockito {
+public class ReceiveLogJsTest extends Mockito {
 
     @Test
     public void testServlet() throws Exception {

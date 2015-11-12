@@ -11,8 +11,6 @@ import java.io.IOException;
 
 public class ReceiveLog extends AbstractServlet {
 
-    private Log log;
-
     @Override
     public void init() throws ServletException {
         super.init();
@@ -29,19 +27,21 @@ public class ReceiveLog extends AbstractServlet {
     }
 
     @Override
-    protected void setLogType(Gson gson, StringBuffer jsonString) {
+    protected Log convertToLogType(Gson gson, StringBuffer jsonString) {
         /**
          * With GSON library create a Java Object
          */
-        log = gson.fromJson(jsonString.toString(), Log.class);
+        return  gson.fromJson(jsonString.toString(), Log.class);
     }
 
     @Override
-    protected void logMessage(Logger logger) {
+    protected void logMessage(Logger logger, Object log) {
 
         /**
          * Log the message (rf logback.xml)
          */
-        logger.debug("Incoming message from js client line[{}], message [{}]", log.getLine(), log.getErrMessage());
+
+        Log logObject = (Log)log;
+        logger.debug("Incoming message from js client line[{}], message [{}]", logObject.getLine(), logObject.getErrMessage());
     }
 }
